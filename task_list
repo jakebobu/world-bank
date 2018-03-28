@@ -1,0 +1,12 @@
+MVP: grouping country year multi indexes
+Bonus feature: build a model that predicts gdp five years into the future
+Bonus**2 : build a web app to display findings
+Bonus**3: incorperate data from other sources, like FAO
+To Dos: 
+- analyze and implement fill na options (1 day)
+- grouping MVP model (2 days)
+- Optimize model (1 days)
+- build and optimize model to predict gdp (1 day)
+- attempt to incorperate data from other sources, like FAO (1 day)
+- Build web app MVP (3 days)
+- Get web app running on AWS (1 day)
