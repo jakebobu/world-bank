@@ -15,9 +15,10 @@ Capstone Project for Galvanize DSI
 ## The Project
 The goal of this project is to use world bank data to inform our understanding of the world
 
-Goal 1:  Build a model that will group countries
-Goal 2:  Build a model to predict GDP 5 years into the future
-Goal 3:  Show the world
+Goals:
+* Build a model that will group countries
+* Build a model to predict GDP 5 years into the future
+* Show the world
 
 ## References
 1. 
