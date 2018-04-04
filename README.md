@@ -90,7 +90,7 @@ Data preprocessing was a significant undertaking utilizing pandas, and was carri
 
 ![Elbow Plot](https://github.com/jakebobu/world-bank/blob/master/elbow_plot_25_clusters.png)
 
-As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [silhouette_scores_by_number_of_clusers](https://github.com/jakebobu/world-bank/blob/master/silhouette_scores_by_number_of_clusers) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 19 as it had enough clusters to provide context for its members while being small enough to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent)
+As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [silhouette_scores_by_number_of_clusers](https://github.com/jakebobu/world-bank/blob/master/silhouette_scores_by_number_of_clusers) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 19 as it had enough clusters to provide context for its members while there are enough group to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent).
 
 |Models Compared|Fowlkes Mallows|Normed Mutual l Info|
 | ------------- |:-------------:| ---------------:|
