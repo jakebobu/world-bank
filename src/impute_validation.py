@@ -9,6 +9,7 @@ import sys
 from numba import njit, prange
 
 
+
 def ewma_impute(df,n):
     '''
     function calculates ewmma for every value in the df and replaces NaNs with said values
@@ -141,7 +142,7 @@ def knn_grid_search(k):
     filename = 'knn_{}.csv'.format(k)
     df_out.to_csv(filename,index=False)
 
-def make_final_df(df):
+def make_final_df(df, filename):
     '''
     normalizes the dataframe and then uses a linear combination of the two imputation
     methods.  then writes the values to csv
@@ -157,14 +158,35 @@ def make_final_df(df):
                     df_normed[col].loc[i]=df_knn[col].loc[i]
                 else:
                     df_normed[col].loc[i]=0.4706169*df_ewma[col].loc[i] + 0.53917426*df_knn[col].loc[i] - 0.00184871
+    name = filename+'.csv'
+    df_normed.to_csv(name)
+    return df_normed
 
-    df_normed.to_csv('combination_imputation.csv')
+def simple_final_df(df, filename):
+    df_normed = nan_normalize(df)
+    cols = df_normed.select_dtypes(include=[np.float]).columns
+    arr_normed = df_normed[cols].values
+    #print(arr_normed.shape)
+    arr_ewma = ewma_impute(df_normed,2)[cols].values
+    arr_knn = knn_impute(df_normed,3)[cols].values
+    #arr_ewma = np.ones(arr_normed.shape)
+    #arr_knn = np.ones(arr_normed.shape)
+
+    fills = np.nanmean( np.array([ arr_ewma , arr_knn ]), axis=0 )
+    inds = np.where(np.isnan(arr_normed))
+    arr_normed[inds] = fills[inds]
+    #arr_normed[inds] = 0.4706169*arr_ewma[inds]+0.53917426*arr_knn[inds]- 0.00184871
+
+    df_out = pd.concat([df_normed[['Country Name','Unnamed: 1']],pd.DataFrame(arr_normed,columns=df_normed.select_dtypes(include=[np.float]).columns)],axis=1)
+    df_out.to_csv(filename+'.csv')
+    return df_out
+
 
 if __name__ == '__main__':
     df = pd.read_csv('inner_joind_dropped.csv').drop(['Unnamed: 0.1','Unnamed: 0'], axis=1)
 
     #df = pd.read_csv('subset_small.csv').drop(['Unnamed: 0'], axis=1)
-    make_final_df(df)
+    df = make_final_df(df, 'combination_imputation')
 
     #df_normed = nan_normalize(df)
 

@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from statsmodels.regression.linear_model import OLS
 import statsmodels.api as sm
+from impute_validation import simple_final_df
+from sklearn.cluster import DBSCAN,KMeans,Birch,AgglomerativeClustering,FeatureAgglomeration
+from sklearn.metrics.pairwise import euclidean_distances
+from sklearn.metrics import fowlkes_mallows_score, normalized_mutual_info_score,adjusted_mutual_info_score
 
 def scree_plot(pca, title=None):
     num_components = pca.n_components_
@@ -43,6 +47,15 @@ def scree_plot(pca, title=None):
     if title is not None:
         plt.title(title, fontsize=16)
 
+    num = 0
+    for i,p in enumerate(vals):
+        num +=p
+        if num>0.9:
+            print('############ scree 1 ',i)
+            return i+1
+    print('############ scree 2 ',i)
+    return None
+
 def plot_embedding(X, y, title=None):
     '''
     INPUT:
@@ -62,8 +75,8 @@ def plot_embedding(X, y, title=None):
     ax.axis('off')
     ax.patch.set_visible(False)
     for i in range(X.shape[0]):
-        plt.text(X[i, 0], X[i, 1], str(y[i]),
-                 color=plt.cm.Set1(y[i] / 10.),
+        plt.text(X[i, 0], X[i, 1], str(y[i][0]),
+                 color=plt.cm.Set1(y[i][1] / 10.),
                  fontdict={'weight': 'bold', 'size': 12})
 
     plt.xticks([]), plt.yticks([])
@@ -87,32 +100,85 @@ def make_pca(data,n_components):
 
 def make_plot_embedding(data,y,scree=False):
     data = np.array(data)
-    pca = make_pca(data,2)
+    pca = make_pca(data,18)
 
     if scree:
-        scree_plot(pca, title=None)
+        i=scree_plot(pca, title=None)
+        print('############ make plot ',i)
+    else:
+        i = None
 
     X=data.dot(pca.components_.T)
     plot_embedding(X, y, title=None)
+    return i
+
 
 if __name__ == '__main__':
+    #df = pd.read_csv('inner_joind_dropped.csv').drop(['Unnamed: 0.1','Unnamed: 0'], axis=1)
+    df = pd.read_csv('full_imputation.csv')
+    #df = pd.read_csv('subset_small.csv').drop(['Unnamed: 0'], axis=1)
+    #filename = 'subset_imputed'
+    #df = simple_final_df(df, filename)
+    data =df.drop(['Country Name','Unnamed: 0','Unnamed: 1'], axis=1).values
+    #target = df[['Unnamed: 0','GDP per capita (current US$)_x']].values
+    target = df[['Unnamed: 0','Unnamed: 1']].values
 
-    df = pd.read_csv('combination_imputation.csv')
+    i = make_plot_embedding(data,target,scree=True)
+    #i=17
+    # Y=target
+    # for i in range(1,len(data[0])+1):
+    #     pca = make_pca(data,i)
+    #     X=data.dot(pca.components_.T)
+    #     X=sm.add_constant(X)
+    #     model = sm.OLS(Y,X).fit()
+    #     print('\n for {} eigenbasis the OLS has'.format(i))
+    #     print('r2 : ',model.rsquared)
+    #     print('r2 adj : ',model.rsquared_adj)
+    #     print('var explained', pca.explained_variance_ratio_)
 
-    data =df.drop(['Country Name', 'GDP per capita (current US$)_x'], axis=1).values
-    target = df['GDP per capita (current US$)_x'].values
+    #plt.show()
 
-    make_plot_embedding(data,target,scree=True)
+    print('############### using {} pca components ###############'.format(i))
 
-    Y=target
-    for i in range(1,len(data[0])+1):
-        pca = make_pca(data,i)
-        X=data.dot(pca.components_.T)
-        X=sm.add_constant(X)
-        model = sm.OLS(Y,X).fit()
-        print('\n for {} eigenbasis the OLS has'.format(i))
-        print('r2 : ',model.rsquared)
-        print('r2 adj : ',model.rsquared_adj)
-        print('var explained', pca.explained_variance_ratio_)
+    dist=np.load('full_imputation_dist.npy')
+    pca = make_pca(data,i)
+    X=data.dot(pca.components_.T)
 
-    plt.show()
+    #dist_X = euclidean_distances(X, X)
+    dist_X=np.load('pca_17_vec_dist.npy')
+
+    #filename = 'pca_{}_vec'.format(i)
+    #np.save(filename+'_dist', dist_X)
+
+    n_clusters = 19
+
+    db_dist = DBSCAN(eps = 0.0264175, metric='precomputed', n_jobs = -1,min_samples=2).fit(dist)
+    db_pca = DBSCAN(eps=0.0059625, metric='precomputed',n_jobs = -1,min_samples=2).fit(dist_X)
+    km_pca = KMeans(n_jobs = -2, n_clusters=n_clusters).fit(X)
+    birch_data = Birch(n_clusters=n_clusters).fit(data)
+    agglom_data = AgglomerativeClustering(n_clusters=n_clusters).fit(data)
+    birch_pca = Birch(n_clusters=n_clusters).fit(X)
+    agglom_pca = AgglomerativeClustering(n_clusters=n_clusters).fit(X)
+
+    filename = '{}_labels.csv'.format(n_clusters)
+
+    df = pd.read_csv(filename)
+
+    df['db_dist']=db_dist.labels_
+    df['db_pca']=db_pca.labels_
+    df['km_pca']=km_pca.labels_
+    df['birch_data']=birch_data.labels_
+    df['agglom_data']=agglom_data.labels_
+    df['birch_pca']=birch_pca.labels_
+    df['agglom_pca']=agglom_pca.labels_
+
+    df.to_csv(filename)
+
+    for col1 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label']:
+        for col2 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label']:
+            print('fowlkes mallows score {} vs {} '.format(col1,col2), fowlkes_mallows_score(df[col1].values, df[col2].values))
+            print('normed mutal info score {} vs {} '.format(col1,col2), normalized_mutual_info_score(df[col1].values, df[col2].values))
+            print('adjusted mutal info score {} vs {} '.format(col1,col2), adjusted_mutual_info_score(df[col1].values, df[col2].values))
+            print('\n')
+
+    

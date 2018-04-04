@@ -184,10 +184,11 @@ class KMeans(object):
             if (np.array([euclidean_distance_per_feature(*a) for a in zip(self.centroids_,new_centroids)]) < self.tolerance).all():
                 if self.verbose:
                     print('Converged on interation {}'.format(i))
+                    return i
                 break
             # re-assign centroids
             self.centroids_ = new_centroids
-
+        return i
 
     def predict(self, X):
         '''
@@ -235,6 +236,7 @@ def load_data(filename,n):
     df = pd.read_csv(filename+'.csv')
     columns = list(df.columns)
     index_cols = [columns[n],columns[n+1]]
+    print(columns[1])
     value_cols = columns[n+2:]
 
     df = nan_normalize(df)
@@ -269,7 +271,7 @@ def elbow_plot(data, plotname):
 
 
 def silhouette(data, k, dist):
-    model = KMeans(n_clusters = k, init='k-means++',tolerance=.000000000000001, n_init=3, verbose=True)
+    model = KMeans(n_clusters = k, init='k-means++',tolerance=0.00000001, n_init=10, verbose=False)
     model.fit(data)
     labels = model.labels_
     return silhouette_score(dist, labels, metric="precomputed")
@@ -284,7 +286,7 @@ def show_countries_in_clusters(data,k,df_ind):
         print(df_ind[labels==i][['Country Name','Unnamed: 1']],'\n')
 
 def write_multi_index_clusters(data,k,df_ind):
-    model = KMeans(n_clusters = k, init='k-means++',tolerance=.000000000000001, n_init=5, verbose=True)
+    model = KMeans(n_clusters = k, init='k-means++',tolerance=.000000000000001, n_init=10, verbose=True)
     model.fit(data)
     labels = model.labels_
     df_lb=pd.DataFrame(labels, columns=['label'])
@@ -314,21 +316,26 @@ if __name__ == '__main__':
     # b = ['Population ages 60-64, female (% of female population)_x','Age population, age 24, male, interpolated','GDP per capita (current US$)_x']
     # data = df[b].values
 
-    filename = 'inner_joind_dropped'
+    #filename = 'inner_joind_dropped'
+    filename = 'full_imputation'
     #loading data, data frame of indexes and name of value cols
-    data, df_multi_ind = load_data(filename,2)
+    data, df_multi_ind = load_data(filename, 1)
     #dist = dist_edpf(data,data)
     #np.save(filename+'_dist', dist)
-    #dist=np.load(filename+'_dist.npy')
+    dist=np.load(filename+'_dist.npy')
 
-    show_countries_in_clusters(data,12,df_multi_ind)
+    #show_countries_in_clusters(data,12,df_multi_ind)
 
-    #df=write_multi_index_clusters(data,12,df_multi_ind)
+    df = write_multi_index_clusters(data, 19, df_multi_ind)
 
     #pretty_out_put(df)
 
-    elbow_plot(data, 'elbow_plot1.png')
+    #elbow_plot(data, 'elbow_plot1.png')
 
     # print('k   silhouette')
-    # for k in range(2, 21):
-    #     print(k,' ',silhouette(data, k, dist))
+    # for k in range(2, 30):
+    #     score1 = silhouette(data, k, dist)
+    #     score2 = silhouette(data, k, dist)
+    #     score3 = silhouette(data, k, dist)
+    #     ave = (score1+score2+score3)/3
+    #     print(k,' ',ave)
