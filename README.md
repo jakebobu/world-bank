@@ -1,6 +1,16 @@
 # A future informed by our past: tackling a wicked problem<sup>1</sup> with historical data
 ![World Bank](http://www.worldbank.org/content/dam/wbr/logo/logo-wb-header-en.svg)
 
+### Contents
+0. [Contents](#contents)
+1. [Motivation](#motivation)
+2. [Nulls in Data](#nulls-in-data)
+3. [Project](#project)
+4. [The Process](#the-process)
+5. [Preliminary Results](#preliminary-results)
+6. [References](#references)
+ 
+## Motivation
 * This year there are 979,387,925 or about 10^9 people who live in the "Least developed countries" UN classification <sup>2</sup>
 * Approximately 26% of the world population is 14 or under.  Let’s use history to make the future better for them. <sup>2</sup>
 <!---
@@ -12,7 +22,9 @@
 
 #### Need: Intelligent analysis of historical data, everyone has it, let’s use it
 
-## The Project
+## Nulls in Data
+
+## Project
 The goal of this project is to use World Bank data to inform our understanding of the world.  I am building a model to provide some amount of context to understanding countries by showing countries from recent years that are similar.  This project is a missing value project; there are many fantastic clustering algorithms that do wonderful things... so long as they are provided good pretty data.  The World Bank data set provided me with the opportunity to build an algorithm that can on its own handle missing values and optimize a combination of imputation methods to best approximate the missing values.
 
 Three Types of Model Constructed:
@@ -30,7 +42,7 @@ Data preprocessing was a significant undertaking utilizing pandas, and was carri
 * Then a linear combination of k nearest neighbors imputation and bi-directional exponentially weighted moving average imputation is used to fill the missing values [src/impute_validation.py](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py), this data set is what model type 2 is built on.
 * Then a principal component analysis reconstruction of the data set with 17 eigenvectors produces the data set that model type 3 is built on [src/make_pca.py](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).
 
-## Preliminary results
+## Preliminary Results
 
 ![Elbow Plot](https://github.com/jakebobu/world-bank/blob/master/elbow_plot_25_clusters.png)
 As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [silhouette_scores_by_number_of_clusers](https://github.com/jakebobu/world-bank/blob/master/silhouette_scores_by_number_of_clusers) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 19 as it had enough clusters to provide context for its members while being small enough to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent)
