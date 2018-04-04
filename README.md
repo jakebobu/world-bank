@@ -36,11 +36,11 @@ Three Types of Model Constructed:
 The data consists of 10293 rows and 409 columns after the first round of culling and reorientation. There are 219 countries, each having 47 associated years.  
 
 Data preprocessing was a significant undertaking utilizing pandas, and was carried out in stages.  
-* First each of the three data sets was cut down to years of interest 1970 to 2016, then reoriented [src/reiorient.py](https://github.com/jakebobu/world-bank/blob/master/src/reorient.py) and combined to create a single table the table of country year multi indexes all of its corresponding features [src/joining.py](https://github.com/jakebobu/world-bank/blob/master/src/joining.py).  
-* The resulting data set is scaled so that any feature with a five order of magnitude difference between the 90th percentile and 10th percentile is on the log scale, then all the features are normalized [src/impute_validation.py](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).  
+* First each of the three data sets was cut down to years of interest 1970 to 2016, then reoriented [(src/reiorient.py)](https://github.com/jakebobu/world-bank/blob/master/src/reorient.py) and combined to create a single table the table of country year multi indexes all of its corresponding features [(src/joining.py)](https://github.com/jakebobu/world-bank/blob/master/src/joining.py).  
+* The resulting data set is scaled so that any feature with a five order of magnitude difference between the 90th percentile and 10th percentile is on the log scale, then all the features are normalized [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).  
 * This data set with about 7% missing values is the data set that model type one is built for.  
-* Then a linear combination of k nearest neighbors imputation and bi-directional exponentially weighted moving average imputation is used to fill the missing values [src/impute_validation.py](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py), this data set is what model type 2 is built on.
-* Then a principal component analysis reconstruction of the data set with 17 eigenvectors produces the data set that model type 3 is built on [src/make_pca.py](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).
+* Then a linear combination of k nearest neighbors imputation and bi-directional exponentially weighted moving average imputation is used to fill the missing values [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py), this data set is what model type 2 is built on.
+* Then a principal component analysis reconstruction of the data set with 17 eigenvectors produces the data set that model type 3 is built on [(src/make_pca.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).
 
 ## Preliminary Results
 
