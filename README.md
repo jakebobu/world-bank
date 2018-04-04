@@ -1,4 +1,4 @@
-# A future informed by our past: tackling a wicked problem<sup>1</sup> with historical data
+# A future informed by our past: tackling a wicked problem[<sup>1</sup>](#references) with historical data
 ![World Bank](http://www.worldbank.org/content/dam/wbr/logo/logo-wb-header-en.svg)
 
 ### Contents
@@ -11,14 +11,14 @@
 6. [References](#references)
  
 ## Motivation
-* This year there are 979,387,925 or about 10^9 people who live in the "Least developed countries" UN classification <sup>2</sup>
-* Approximately 26% of the world population is 14 or under.  Let’s use history to make the future better for them. <sup>2</sup>
+* This year there are 979,387,925 or about 10<sup>9</sup> people who live in the "Least developed countries" UN classification [<sup>2</sup>](#references)
+* Approximately 26% of the world population is 14 or under.  Let’s use history to make the future better for them. [<sup>2</sup>](#references)
 <!---
 * As seen in _ the previous assumption of linear development, maybe being replaced with the need to understand aggregate conditions for development
-* Some companies are diversifying there portfolios into developing markets, let’s find the right ones, possibly countries similar to countries where said company has had success or countries that have the right conditions for growth.
 -->
-* Strategic development, investment in countries that are at a tipping point to prompt desired growth.<sup>3</sup>
-* The history of states and nations has provided some income for historiographers and book dealers, but I know no other purpose it may have served. - Borne (probably Ludwig Börne) <sup>4</sup>
+* Some companies are diversifying there portfolios into developing markets, let’s find the right ones, possibly countries similar to countries where said company has had success or countries that have the right conditions for growth.[<sup>3</sup>](#references)
+* Strategic development, investment in countries that are at a tipping point to prompt desired growth.[<sup>4</sup>](#references)
+* The history of states and nations has provided some income for historiographers and book dealers, but I know no other purpose it may have served. - Borne (probably Ludwig Börne) [<sup>5</sup>](#references)
 
 #### Need: Intelligent analysis of historical data, everyone has it, let’s use it
 
@@ -60,6 +60,7 @@ Normed Mutual Info is the set based metric:
 ## References
 1. https://en.wikipedia.org/wiki/Wicked_problem
 2. https://data.worldbank.org/
-3. https://www.gatesfoundation.org/Where-We-Work/Africa-Office/Focus-Countries
-4. https://www.sheclick.com/quotes/history-is-the-best-predictor-of-the-future-best-quotes/
+3. https://us.axa.com/axa-products/investment-strategies/articles/emerging-market-investments.html
+4. https://www.gatesfoundation.org/Where-We-Work/Africa-Office/Focus-Countries
+5. https://www.sheclick.com/quotes/history-is-the-best-predictor-of-the-future-best-quotes/
 
