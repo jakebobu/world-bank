@@ -33,6 +33,9 @@ Three Types of Model Constructed:
 * M3 Using this filled dataset run it through principal component analysis reduces the collinearities in the data set.  And build a model to work on this transformed data set.
 
 ## The Process
+<!---
+Trust the Process
+-->
 The data consists of 10293 rows and 409 columns after the first round of culling and reorientation. There are 219 countries, each having 47 associated years.  
 
 Data preprocessing was a significant undertaking utilizing pandas, and was carried out in stages.  
