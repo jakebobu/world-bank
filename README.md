@@ -23,7 +23,9 @@
 #### Need: Intelligent analysis of historical data, everyone has it, let’s use it
 
 ## Nulls in Data
-
+<!---
+Ghost in the Data
+-->
 ## Project
 The goal of this project is to use World Bank data to inform our understanding of the world.  I am building a model to provide some amount of context to understanding countries by showing countries from recent years that are similar.  This project is a missing value project; there are many fantastic clustering algorithms that do wonderful things... so long as they are provided good pretty data.  The World Bank data set provided me with the opportunity to build an algorithm that can on its own handle missing values and optimize a combination of imputation methods to best approximate the missing values.
 
@@ -48,6 +50,7 @@ Data preprocessing was a significant undertaking utilizing pandas, and was carri
 ## Preliminary Results
 
 ![Elbow Plot](https://github.com/jakebobu/world-bank/blob/master/elbow_plot_25_clusters.png)
+
 As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [silhouette_scores_by_number_of_clusers](https://github.com/jakebobu/world-bank/blob/master/silhouette_scores_by_number_of_clusers) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 19 as it had enough clusters to provide context for its members while being small enough to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent)
 
 |Models Compared|Fowlkes Mallows|Normed Mutual l Info|
