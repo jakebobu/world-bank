@@ -152,33 +152,40 @@ if __name__ == '__main__':
 
     n_clusters = 19
 
-    db_dist = DBSCAN(eps = 0.0264175, metric='precomputed', n_jobs = -1,min_samples=2).fit(dist)
-    db_pca = DBSCAN(eps=0.0059625, metric='precomputed',n_jobs = -1,min_samples=2).fit(dist_X)
+    km_data = KMeans(n_jobs = -2, n_clusters=n_clusters).fit(data)
+    #db_dist = DBSCAN(eps = 0.0264175, metric='precomputed', n_jobs = -1,min_samples=2).fit(dist)
+    #db_pca = DBSCAN(eps=0.0059625, metric='precomputed',n_jobs = -1,min_samples=2).fit(dist_X)
     km_pca = KMeans(n_jobs = -2, n_clusters=n_clusters).fit(X)
-    birch_data = Birch(n_clusters=n_clusters).fit(data)
-    agglom_data = AgglomerativeClustering(n_clusters=n_clusters).fit(data)
-    birch_pca = Birch(n_clusters=n_clusters).fit(X)
-    agglom_pca = AgglomerativeClustering(n_clusters=n_clusters).fit(X)
+    #birch_data = Birch(n_clusters=n_clusters).fit(data)
+    #agglom_data = AgglomerativeClustering(n_clusters=n_clusters).fit(data)
+    #birch_pca = Birch(n_clusters=n_clusters).fit(X)
+    #agglom_pca = AgglomerativeClustering(n_clusters=n_clusters).fit(X)
 
     filename = '{}_labels.csv'.format(n_clusters)
 
     df = pd.read_csv(filename)
 
-    df['db_dist']=db_dist.labels_
-    df['db_pca']=db_pca.labels_
+    #df['db_dist']=db_dist.labels_
+    #df['db_pca']=db_pca.labels_
     df['km_pca']=km_pca.labels_
-    df['birch_data']=birch_data.labels_
-    df['agglom_data']=agglom_data.labels_
-    df['birch_pca']=birch_pca.labels_
-    df['agglom_pca']=agglom_pca.labels_
+    #df['birch_data']=birch_data.labels_
+    #df['agglom_data']=agglom_data.labels_
+    #df['birch_pca']=birch_pca.labels_
+    #df['agglom_pca']=agglom_pca.labels_
+    df['km_data'] = km_data.labels_
 
     df.to_csv(filename)
 
-    for col1 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label']:
-        for col2 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label']:
+    # for col1 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label','km_data']:
+    #     for col2 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label','km_data']:
+    #         print('fowlkes mallows score {} vs {} '.format(col1,col2), fowlkes_mallows_score(df[col1].values, df[col2].values))
+    #         print('normed mutal info score {} vs {} '.format(col1,col2), normalized_mutual_info_score(df[col1].values, df[col2].values))
+    #         print('adjusted mutal info score {} vs {} '.format(col1,col2), adjusted_mutual_info_score(df[col1].values, df[col2].values))
+    #         print('\n')
+
+    for col1 in ['km_pca','label','km_data']:
+        for col2 in ['km_pca','label','km_data']:
             print('fowlkes mallows score {} vs {} '.format(col1,col2), fowlkes_mallows_score(df[col1].values, df[col2].values))
             print('normed mutal info score {} vs {} '.format(col1,col2), normalized_mutual_info_score(df[col1].values, df[col2].values))
             print('adjusted mutal info score {} vs {} '.format(col1,col2), adjusted_mutual_info_score(df[col1].values, df[col2].values))
             print('\n')
-
-    

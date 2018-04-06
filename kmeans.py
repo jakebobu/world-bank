@@ -326,16 +326,20 @@ if __name__ == '__main__':
 
     #show_countries_in_clusters(data,12,df_multi_ind)
 
-    df = write_multi_index_clusters(data, 19, df_multi_ind)
+    #df = write_multi_index_clusters(data, 19, df_multi_ind)
 
     #pretty_out_put(df)
 
     #elbow_plot(data, 'elbow_plot1.png')
 
-    # print('k   silhouette')
-    # for k in range(2, 30):
-    #     score1 = silhouette(data, k, dist)
-    #     score2 = silhouette(data, k, dist)
-    #     score3 = silhouette(data, k, dist)
-    #     ave = (score1+score2+score3)/3
-    #     print(k,' ',ave)
+    print('k   silhouette')
+    lst=[]
+    for k in range(2, 50):
+        score1 = silhouette(data, k, dist)
+        score2 = silhouette(data, k, dist)
+        score3 = silhouette(data, k, dist)
+        score4 = silhouette(data, k, dist)
+        ave = (score1+score2+score3+score4)/4
+        print(k,' ',ave)
+        lst.append([k,ave,score1,score2,score3,score4])
+    pd.DataFrame(lst,columns=['k','ave','score1',"score2","score3","score4"]).to_csv('silhouette_scores.csv',index=False)
