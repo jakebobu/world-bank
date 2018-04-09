@@ -239,25 +239,15 @@ def load_data(filename,n):
     print(columns[1])
     value_cols = columns[n+2:]
 
-    df = nan_normalize(df)
-
     data = df[value_cols].values
     return data, df[index_cols]
 
-def nan_normalize(df):
-    for col in df.select_dtypes(include=[np.float]).columns:
-        if np.nanpercentile(df[col],90)-np.nanpercentile(df[col],10)>100000:
-            df[col] = df[col].apply(lambda x: np.log(x))
-        df[col]=df[col]-np.nanmean(df[col])
-        df[col]=df[col]/np.nanstd(df[col])
-    return df
-
 def elbow_plot(data, plotname):
     plt.clf()
-    ks = np.arange(2, 25)
+    ks = np.arange(2, 50)
     sses = []
     for k in ks:
-        model = KMeans(n_clusters = k, init='k-means++', max_iter=300, verbose=True, tolerance=.0000000000000001, n_init=3)
+        model = KMeans(n_clusters = k, init='k-means++', max_iter=300, verbose=False, tolerance=0.00000001, n_init=3)
         model.fit(data)
         sc=model.score(data)
         sses.append(sc)
@@ -317,29 +307,30 @@ if __name__ == '__main__':
     # data = df[b].values
 
     #filename = 'inner_joind_dropped'
-    filename = 'full_imputation'
+    #filename = 'full_imputation'
+    filename = 'normed_inner_restack'
     #loading data, data frame of indexes and name of value cols
-    data, df_multi_ind = load_data(filename, 1)
+    data, df_multi_ind = load_data(filename, 0)
     #dist = dist_edpf(data,data)
     #np.save(filename+'_dist', dist)
-    dist=np.load(filename+'_dist.npy')
+    #dist=np.load(filename+'_dist.npy')
 
     #show_countries_in_clusters(data,12,df_multi_ind)
 
-    #df = write_multi_index_clusters(data, 19, df_multi_ind)
+    df = write_multi_index_clusters(data, 25, df_multi_ind)
 
     #pretty_out_put(df)
 
     #elbow_plot(data, 'elbow_plot1.png')
 
-    print('k   silhouette')
-    lst=[]
-    for k in range(2, 50):
-        score1 = silhouette(data, k, dist)
-        score2 = silhouette(data, k, dist)
-        score3 = silhouette(data, k, dist)
-        score4 = silhouette(data, k, dist)
-        ave = (score1+score2+score3+score4)/4
-        print(k,' ',ave)
-        lst.append([k,ave,score1,score2,score3,score4])
-    pd.DataFrame(lst,columns=['k','ave','score1',"score2","score3","score4"]).to_csv('silhouette_scores.csv',index=False)
+    # print('k   silhouette')
+    # lst=[]
+    # for k in range(2, 50):
+    #     score1 = silhouette(data, k, dist)
+    #     score2 = silhouette(data, k, dist)
+    #     score3 = silhouette(data, k, dist)
+    #     score4 = silhouette(data, k, dist)
+    #     ave = (score1+score2+score3+score4)/4
+    #     print(k,' ',ave)
+    #     lst.append([k,ave,score1,score2,score3,score4])
+    # pd.DataFrame(lst, columns=['k','ave','score1',"score2","score3","score4"]).to_csv('silhouette_scores.csv',index=False)

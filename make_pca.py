@@ -11,6 +11,7 @@ from impute_validation import simple_final_df
 from sklearn.cluster import DBSCAN,KMeans,Birch,AgglomerativeClustering,FeatureAgglomeration
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics import fowlkes_mallows_score, normalized_mutual_info_score,adjusted_mutual_info_score
+import pdb
 
 def scree_plot(pca, title=None):
     num_components = pca.n_components_
@@ -19,7 +20,7 @@ def scree_plot(pca, title=None):
     plt.figure(figsize=(10, 6), dpi=250)
     ax = plt.subplot(111)
     ax.bar(ind, vals, 0.35,
-        color=[(0.949, 0.718, 0.004),
+            color=[(0.949, 0.718, 0.004),
                (0.898, 0.49, 0.016),
                (0.863, 0, 0.188),
                (0.694, 0, 0.345),
@@ -46,7 +47,7 @@ def scree_plot(pca, title=None):
 
     if title is not None:
         plt.title(title, fontsize=16)
-
+    print (vals)
     num = 0
     for i,p in enumerate(vals):
         num +=p
@@ -100,7 +101,7 @@ def make_pca(data,n_components):
 
 def make_plot_embedding(data,y,scree=False):
     data = np.array(data)
-    pca = make_pca(data,18)
+    pca = make_pca(data,57)
 
     if scree:
         i=scree_plot(pca, title=None)
@@ -115,13 +116,16 @@ def make_plot_embedding(data,y,scree=False):
 
 if __name__ == '__main__':
     #df = pd.read_csv('inner_joind_dropped.csv').drop(['Unnamed: 0.1','Unnamed: 0'], axis=1)
-    df = pd.read_csv('full_imputation.csv')
+    #df = pd.read_csv('full_imputation.csv')
+    df = pd.read_csv('imputed.csv')
     #df = pd.read_csv('subset_small.csv').drop(['Unnamed: 0'], axis=1)
     #filename = 'subset_imputed'
     #df = simple_final_df(df, filename)
-    data =df.drop(['Country Name','Unnamed: 0','Unnamed: 1'], axis=1).values
-    #target = df[['Unnamed: 0','GDP per capita (current US$)_x']].values
-    target = df[['Unnamed: 0','Unnamed: 1']].values
+
+    df.drop('Unnamed: 0', axis=1,inplace=True)
+    data =df.drop(['Country Name','level_1'], axis=1).values
+    target = df[['Country Name','GDP per capita (current US$)']].values
+    #target = df[['Unnamed: 0','Unnamed: 1']].values
 
     i = make_plot_embedding(data,target,scree=True)
     #i=17
@@ -140,17 +144,18 @@ if __name__ == '__main__':
 
     print('############### using {} pca components ###############'.format(i))
 
-    dist=np.load('full_imputation_dist.npy')
+    #dist=np.load('full_imputation_dist.npy')
+
     pca = make_pca(data,i)
     X=data.dot(pca.components_.T)
 
     #dist_X = euclidean_distances(X, X)
-    dist_X=np.load('pca_17_vec_dist.npy')
+    #dist_X=np.load('pca_17_vec_dist.npy')
 
     #filename = 'pca_{}_vec'.format(i)
     #np.save(filename+'_dist', dist_X)
 
-    n_clusters = 19
+    n_clusters = 25
 
     km_data = KMeans(n_jobs = -2, n_clusters=n_clusters).fit(data)
     #db_dist = DBSCAN(eps = 0.0264175, metric='precomputed', n_jobs = -1,min_samples=2).fit(dist)
@@ -174,7 +179,7 @@ if __name__ == '__main__':
     #df['agglom_pca']=agglom_pca.labels_
     df['km_data'] = km_data.labels_
 
-    df.to_csv(filename)
+    df.to_csv(filename, index = False)
 
     # for col1 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label','km_data']:
     #     for col2 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label','km_data']:
