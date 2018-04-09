@@ -1,0 +1,3 @@
+for 5: 
+{'criterion': 'mse', 'max_depth': 20, 'max_features': 200, 'min_samples_split': 4, 'n_estimators': 300}
+for 5 mse is 0.020372987428638127 and r2 is 0.9765655014657011
