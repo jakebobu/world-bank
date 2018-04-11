@@ -1,5 +1,6 @@
 # A future informed by our past: tackling a wicked problem[<sup>1</sup>](#references) with historical data
 ![World Bank](http://www.worldbank.org/content/dam/wbr/logo/logo-wb-header-en.svg)
+http://ec2-52-23-205-66.compute-1.amazonaws.com:8080/
 
 ### Contents
 0. [Contents](#contents)
@@ -45,26 +46,30 @@ The data consists of XX rows and XX columns after the first round of culling and
 Data preprocessing was a significant undertaking utilizing pandas, and was carried out in stages.  
 * First each of the three data sets was cut down to years of interest 1970 to 2016, then reoriented  and combined to create a single table the table of country year multi indexes all of its corresponding features [(src/build_csv.py)](https://github.com/jakebobu/world-bank/blob/master/src/build_csv.py).  
 * The resulting data set is scaled so that any feature with a five order of magnitude difference between the 90th percentile and 10th percentile is on the log scale, then all the features are normalized [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).  
-* This data set with about 7% missing values is the data set that model type one is built for.  
-* Then a linear combination of k nearest neighbors imputation and bi-directional exponentially weighted moving average imputation is used to fill the missing values [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py), this data set is what model type 2 is built on.
+* This data set with about 22% missing values is the data set that model type one (M1) is built for.  
+* Then k nearest neighbors imputation and bi-directional exponentially weighted moving average imputation are averaged to fill the missing values [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py), this data set is what model type 2 is built on.
 * Then a principal component analysis reconstruction of the data set with 17 eigenvectors produces the data set that model type 3 is built on [(src/make_pca.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).
 * To test the idea that aggregate conditions are predictive of future Xgrowth/developmentX I built a couple regression models to predict future gdp per capita from a single country year vector [src/random_forests.pu](https://github.com/jakebobu/world-bank/blob/master/src/random_forests.py)
+* To display the gdp per capita graphs in the web application [src/make_gdp_csv.py](https://github.com/jakebobu/world-bank/blob/master/src/make_gdp_csv.py) creates a csv of the gdp per capita and predictions for the next five years.
 
 ## Preliminary Results
 
 ![Elbow Plot](https://github.com/jakebobu/world-bank/blob/master/outputs/final_elbow_plot.png)
 
-As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [silhouette_scores_by_number_of_clusers](https://github.com/jakebobu/world-bank/blob/master/outputs/silhouette_scores.csv) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 19 as it had enough clusters to provide context for its members while being small enough to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent)
+As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [silhouette_scores_by_number_of_clusers](https://github.com/jakebobu/world-bank/blob/master/outputs/silhouette_scores.csv) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 25 as it had enough clusters to provide context for its members while being small enough to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent)
 
 |Models Compared|Fowlkes Mallows|Normed Mutual l Info|
 | ------------- |:-------------:| ---------------:|
-| M1 vs M2      |0.574          |0.739            |
-| M2 vs M3      |0.715          |0.813            |
-| M1 vs M3      |0.637          |0.761            |
+| M1 vs M2      |0.627          |0.760            |
+| M2 vs M3      |0.784          |0.860            |
+| M1 vs M3      |0.618          |0.749            |
 
 Fowlkes Mallow is the geometric mean of precision and recall.
 Normed Mutual Info is the set based metric: 
 ![NMI](http://scikit-learn.org/stable/_images/math/bec21a153660524d4479a87aaef3b1f00bcd1dbb.png)
+My interpretation of these results that in the broadest strokes, model 1 has less in common with each of the other models than they do with each other, but not by a huge amount.  This is to say it is probably not commpletely useless and it feels like an advantage to say it isn't makeing any imputation assumptions.
+
+I have built a web app to allow for some interaction with the results: http://ec2-52-23-205-66.compute-1.amazonaws.com:8080/
 
 ## References
 1. https://en.wikipedia.org/wiki/Wicked_problem
