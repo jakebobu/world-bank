@@ -4,7 +4,6 @@ from fancyimpute import KNN
 import math
 from multiprocessing import Pool
 from math import sqrt
-import pdb
 import sys
 import time
 from numba import njit, prange
@@ -14,10 +13,19 @@ from build_csv import joining
 
 def ewma_impute(df,n):
     '''
-    function calculates ewmma for every value in the df and replaces NaNs with said values
-    n is span of ewma
-    returns:
-    pandas dataframe filled
+    function calculates Exponentially Weighted Moving Average for every value in
+    the df and replaces NaNs with said values, n is span of ewma, related to
+    decay param alpha  as alpha = 2/(1+n)
+
+    Parameters
+    ----------
+    df : pandas dataframe, dataframe to be filled
+
+    n : int, span of ewma
+
+    Returns
+    -------
+    df_values : pandas dataframe, with missing values ewma imputed
     '''
     i=0
     for group in df.groupby('Country Name'):
@@ -43,9 +51,15 @@ def nan_normalize(df):
     '''
     function takes in a pandas data frame and for each column transforms it to
     log scale if the differnce between 90th percentile and 10th percential is 10^5
-    then normalizes each collumn
-    return:
-    pandas DataFrame
+    then normalizes each collumn transforms are writen to disk as csv
+
+    Parameters
+    ----------
+    df : pandas dataframe, dataframe to be normalized
+
+    Returns
+    -------
+    df : pandas dataframe, after being normalized
     '''
     outer_list=[]
     print('NAN NORMALIZE')
@@ -82,8 +96,16 @@ def nan_normalize(df):
 def knn_impute(df,k):
     '''
     function usess knn imputation to fill all nan
-    k is number of neighbors for knn imputation
-    returns filled pandas DataFrame
+
+    Parameters
+    ----------
+    df : pandas dataframe, dataframe to be filled
+
+    k : int, number of neighbors to use for imputation
+
+    Returns
+    -------
+    df_out : pandas dataframe, after being filled
     '''
     df_numeric = df.select_dtypes(include=[np.float])
     cols = df_numeric.columns
@@ -92,9 +114,14 @@ def knn_impute(df,k):
 
 def get_impute_info(n_in):
     '''
-    this function was used for validation of and comparison of the two imputation methods
-    it reads in the csv and removes n values from the data frame, imputes the values with
-    each value, the repeats iterations times results are saved to csv
+    this function was used for validation of and comparison of the two imputation
+    methods it reads in the csv of the normed data and removes 1262*n_in values
+    from the data frame, imputes the values with each method, the repeats
+    iterations times results are saved to csv
+
+    Parameters
+    ----------
+    n_in : int, multiplied by 1262 to determine the number of values to evaluate
     '''
     n = 1262*n_in
     iterations = 3
@@ -137,6 +164,10 @@ def knn_grid_search(k):
     this function was used to decide on the optimal k to use for knn imputation
     it removes n values and runs the imputation, it does this iterations times
     then it writes to csv
+
+    Parameters
+    ----------
+    k : int, number of neighbors to use in knn imputation
     '''
     n = 3782
     iterations = 3
@@ -171,8 +202,15 @@ def knn_grid_search(k):
 
 def make_final_df(df, filename):
     '''
-    uses a linear combination of the two imputation
-    methods.  then writes the values to csv
+    uses a linear combination of the two imputation methods.  then writes the
+    values to csv.  It has been scrapped as it showed only marginal gains over
+    the much faster simple_final_df function below
+
+    Parameters
+    ----------
+    df : pandas dataframe to be imputed
+
+    filename : string, name save csv as
     '''
     df_ewma = ewma_impute(df,2)
     df_knn = knn_impute(df,3)
@@ -183,12 +221,24 @@ def make_final_df(df, filename):
                 if np.isnan(df_ewma[col].loc[i]):
                     df[col].loc[i]=df_knn[col].loc[i]
                 else:
-                    df[col].loc[i]=0.4706169*df_ewma[col].loc[i] + 0.53917426*df_knn[col].loc[i] - 0.00184871
+                    #these values below were found by doing and ordinary least
+                    #squares fit on the output of get_impute_info csv
+                    df[col].loc[i]=0.4259*df_ewma[col].loc[i] + 0.5655*df_knn[col].loc[i] -0.0024
     name = filename+'.csv'
     df.to_csv(name, index=False)
     return df
 
 def simple_final_df(df, filename, save=False):
+    '''
+    uses an average of the two imputation methods.  then writes the
+    values to csv.
+
+    Parameters
+    ----------
+    df : pandas dataframe to be imputed
+
+    filename : string, name save csv as
+    '''
     cols = df.select_dtypes(include=[np.float]).columns
     arr_normed = df[cols].values
     #print(arr_normed.shape)
@@ -210,6 +260,20 @@ def simple_final_df(df, filename, save=False):
     return df_out
 
 def selection(df):
+    '''
+    this function removes some of the population statistics that are not relative
+    or related to education.  any country that has a year where less than a third
+    of the features are present that country is dropped.  any feature that has
+    less than 60 percent data is dropped.
+
+    Parameters
+    ----------
+    df : pandas dataframe to be imputed
+
+    Returns
+    -------
+    df : pandas dataframe, after being cut down
+    '''
     print('SELECTION')
     for col in df.columns:
         if "opulation" in col and '%' not in col and 'education' not in col and df[col].count() < 0.90652*len(df):
@@ -229,15 +293,15 @@ def selection(df):
 
 if __name__ == '__main__':
     #df = pd.read_csv('inner_restack.csv')
-    lst = ['HNP_StatsData','WDIData','EdStatsData']
-    df=joining(lst)
-    df_select = selection(df)
-    df_normed = nan_normalize(df_select)
-    df_normed.to_csv('normed_inner_restack.csv', index=False)
+    # lst = ['HNP_StatsData','WDIData','EdStatsData']
+    # df=joining(lst)
+    #df_select = selection(df)
+    #df_normed = nan_normalize(df_select)
+    #df_normed.to_csv('normed_inner_restack.csv', index=False)
 
-    #df = pd.read_csv('normed_inner_restack.csv')
-#    df = make_final_df(df, 'combination_imputation')
-    #df = simple_final_df(df, 'imputed')
+    df_normed = pd.read_csv('normed_inner_restack.csv')
+    df = make_final_df(df_normed, 'combination_imputation')
+    #df = simple_final_df(df_normed, 'imputed')
 
 
     #n = 2
@@ -250,11 +314,11 @@ if __name__ == '__main__':
     # pool.join()
 
 
-    # n = [2,3,4]
-    # pool = Pool()
-    # pool.map(get_impute_info, n)
-    # pool.close()
-    # pool.join()
+    n = [2,3,4]
+    pool = Pool()
+    pool.map(get_impute_info, n)
+    pool.close()
+    pool.join()
 
     #filename = 'impute_info_3_6303.csv'
     #df_info.to_csv(filename,index=False)

@@ -1,12 +1,9 @@
 import numpy as np
 import random
-from sklearn import datasets
 import matplotlib.pyplot as plt
-from scipy.spatial.distance import cdist
 from sklearn.metrics import silhouette_score
 import pandas as pd
 import warnings
-import pdb
 from multiprocessing import Pool
 from numba import njit, prange
 
@@ -32,8 +29,17 @@ def euclidean_distance_per_feature(a, b):
 @njit(parallel=True)
 def dist_edpf(XA,XB):
     '''
-    dist(u=XA[i], v=XB[j])`` is computed and stored in the
-        :math:`ij` th entry.
+    dist(u=XA[i], v=XB[j]) is computed and stored in the ij'th entry.
+    where dist is the above euclidean_distance_per_feature
+
+    Parameters
+    ----------
+    XA : numpy array
+    XB : numpy array
+
+    Returns
+    -------
+    arr : numpy array
     '''
     n_a = len(XA)
     n_b = len(XB)
@@ -52,15 +58,11 @@ class KMeans(object):
     n_clusters : int, optional, default: 8
         The number of clusters to form as well as the number of
         centroids to generate.
-    init : {'random', 'random_initialization', 'k-means++'}
+    init :
         Method for initialization, defaults to 'k-means++':
         'k-means++' : selects initial cluster centers for k-mean
         clustering in a smart way to speed up convergence. See section
         Notes in k_init for more details.
-        'random': choose k observations (rows) at random from data for
-        the initial centroids.
-        If an ndarray is passed, it should be of shape (n_clusters, n_features)
-        and gives the initial centers.
     n_init : int, default: 1
         Number of time the k-means algorithm will be run with different
         centroid seeds. The final results will be the best output of
@@ -68,7 +70,7 @@ class KMeans(object):
     max_iter : int, default: 1000
         Maximum number of iterations of the k-means algorithm for a
         single run.
-    tolerance : int, default : .00001
+    tolerance : float, default : .00001
     Attributes
     ----------
     centroids_ : array, [n_clusters, n_features]
@@ -77,7 +79,7 @@ class KMeans(object):
         Labels of each point
     '''
 
-    def __init__(self, n_clusters=8, init='random', n_init=1,
+    def __init__(self, n_clusters=8, init='k-means++', n_init=1,
                  max_iter=300, tolerance = 1e-4, verbose = False):
 
         self.n_clusters = n_clusters
@@ -94,20 +96,11 @@ class KMeans(object):
         Parameters
         ----------
         X : array-like or sparse matrix, shape=(n_samples, n_features)
-            Data points to take random selection from for initial centroids
-        You should code the simplest case of random selection of k centroids from data
-        OPTIONAL: code up random_initialization and/or k-means++ initialization here also
+
+        k-means++ initialization for centroids
         '''
-        if self.init == 'random':
-            # random choice centroid initialization
-            randinds = np.random.choice(np.arange(X.shape[0]), self.n_clusters)
-            self.centroids_ =  X[randinds]
-        elif self.init == 'random_initialization':
-            labels = np.random.choice(self.n_clusters, size = X.shape[0])
-            self.centroids_ = np.array([X[labels == label].mean(axis = 0) for label in range(self.n_clusters)])
-        else:
-            # use Kmeans plus plus
-            self.centroids_ = self._kmeans_plus_plus(X)
+        # use Kmeans plus plus
+        self.centroids_ = self._kmeans_plus_plus(X)
 
     def _kmeans_plus_plus(self, X):
         '''
@@ -129,15 +122,14 @@ class KMeans(object):
                 # pick random choice with probabilty propertional to distances
                 ind = np.random.choice(X.shape[0], p = dists2/dists2.sum())
                 centroids[j] = X[ind]
-                #print('place 1\n',centroids)
         return centroids
 
 
     def _assign_clusters(self, X):
         '''
-        computes euclidean distance from each point to each centroid and
-        assigns point to closest centroid)
-        assigns self.labels_
+        computes euclidean distance per feature from each point to each centroid
+        and assigns point to closest centroid) assigns self.labels_
+
         Parameters
         ----------
         X : array-like or sparse matrix, shape=(n_samples, n_features)
@@ -228,10 +220,19 @@ class KMeans(object):
 
 def load_data(filename,n):
     '''
-    data set and returns normalized data,index for rows and column dames set as a np array
-    filename string
-    data np array
-    df[index_cols] pd DataFrame
+    builds a dataframe from filename csv for which the index columns start at n
+
+    Parameters
+    ----------
+    filename : string, name of csv to read in
+
+    n : int, what the index columns START
+
+    Returns
+    -------
+    data : numpy array of the nonindex columns
+
+    df[index_cols] : pandas dataframe, just the psudoindex columns
     '''
     df = pd.read_csv(filename+'.csv')
     columns = list(df.columns)
@@ -242,9 +243,20 @@ def load_data(filename,n):
     data = df[value_cols].values
     return data, df[index_cols]
 
-def elbow_plot(data, plotname):
+def elbow_plot(data, plotname,  n):
+    '''
+    builds a elbow plot and saves it as plotname
+
+    Parameters
+    ----------
+    data : numpy array of the nonindex columns
+
+    plotname : string, what to save the fig as
+
+    n : int, how many clusters to consider
+    '''
     plt.clf()
-    ks = np.arange(2, 50)
+    ks = np.arange(2, n+1)
     sses = []
     for k in ks:
         model = KMeans(n_clusters = k, init='k-means++', max_iter=300, verbose=False, tolerance=0.00000001, n_init=3)
@@ -256,26 +268,69 @@ def elbow_plot(data, plotname):
     plt.xlabel('Number of clusters')
     plt.ylabel('SSE')
     plt.title('Elbow Plot')
-    plt.show()
     plt.savefig(plotname)
+    plt.show()
 
 
 def silhouette(data, k, dist):
+    '''
+    builds a elbow plot and saves it as plotname
+
+    Parameters
+    ----------
+    data : numpy array of the nonindex columns
+
+    k : int, clusters build the silhouette score for
+
+    dist : numpy array of the precomputed distance between rows of the data
+
+    Returns
+    -------
+    silhouette_score : float, from sklearns function
+    '''
     model = KMeans(n_clusters = k, init='k-means++',tolerance=0.00000001, n_init=10, verbose=False)
     model.fit(data)
     labels = model.labels_
     return silhouette_score(dist, labels, metric="precomputed")
 
 def show_countries_in_clusters(data,k,df_ind):
+    '''
+    shows on screan what countries year psudoindexs are ending up in each group,
+    for k clusters
+
+    Parameters
+    ----------
+    data : numpy array of the nonindex columns
+
+    k : int, clusters build the silhouette score for
+
+    df_ind : pandas dataframe, country year psudoindexs
+    '''
     model = KMeans(n_clusters = k, init='k-means++',tolerance=.000000000000001, n_init=3, verbose=True)
     model.fit(data)
     labels = model.labels_
 
     for i in range(k):
         print("########################## label {} ##########################".format(i))
-        print(df_ind[labels==i][['Country Name','Unnamed: 1']],'\n')
+        print(df_ind[labels==i][['Country Name','level_1']],'\n')
+
 
 def write_multi_index_clusters(data,k,df_ind):
+    '''
+    writes to disd and returns the dataframe of labels
+
+    Parameters
+    ----------
+    data : numpy array of the nonindex columns
+
+    k : int, clusters build the silhouette score for
+
+    df_ind : pandas dataframe, country year psudoindexs
+
+    Returns
+    -------
+    df : pandas dataframe, the results of the clustering written as the column named label
+    '''
     model = KMeans(n_clusters = k, init='k-means++',tolerance=.000000000000001, n_init=10, verbose=True)
     model.fit(data)
     labels = model.labels_
@@ -283,54 +338,77 @@ def write_multi_index_clusters(data,k,df_ind):
     df=pd.concat([df_ind,df_lb],ignore_index=True, axis=1)
     df.columns = (df_ind.columns).append(df_lb.columns)
     filename = '{}_labels.csv'.format(k)
-    df.to_csv(filename)
+    df.to_csv(filename, index=False)
     return df
 
 def pretty_out_put(df):
+    '''
+    creates dataframe with information about differnt groupings and when a country
+    started, ended and how long a country was in a given group ('label')
+
+    Parameters
+    ----------
+    df : pandas dataframe, out put from write_multi_index_clusters
+
+    Returns
+    -------
+    df_info : pandas dataframe, information about the groupings
+    '''
     df_info = pd.DataFrame(columns=['label','country_name','start_yr','end_yr','length_yr'])
     i=0
     for group in df.groupby(['label','Country Name']):
-        first = group[1]['Unnamed: 1'].min()
-        last = group[1]['Unnamed: 1'].max()
+        first = group[1]['level_1'].min()
+        last = group[1]['level_1'].max()
         df_info.loc[i]=[group[0][0],group[0][1],first,last,last-first]
         i+=1
     df_info.to_csv('pretty_out_put.csv')
     return df_info
 
+def build_silhouette_csv(data,n,dist):
+    '''
+    creates dataframe with information about differnt groupings and when a country
+    started, ended and how long a country was in a given group ('label')
+
+    Parameters
+    ----------
+    data : numpy array of the nonindex columns
+
+    n : int, largest number of clusters to consider
+
+    dist : numpy array of precomputed distance between the rows of data
+    '''
+    print('k   silhouette')
+    lst=[]
+    for k in range(2, n+1):
+        score1 = silhouette(data, k, dist)
+        score2 = silhouette(data, k, dist)
+        score3 = silhouette(data, k, dist)
+        score4 = silhouette(data, k, dist)
+        ave = (score1+score2+score3+score4)/4
+        print(k,' ',ave)
+        lst.append([k,ave,score1,score2,score3,score4])
+
+    filename = '{}_silhouette_scores.csv'.format(n)
+    pd.DataFrame(lst, columns=['k','ave','score1',"score2","score3","score4"]).to_csv(filename,index=False)
 
 
 if __name__ == '__main__':
 
-    #Use Subset for testing
-    # df = pd.read_csv('subset_small.csv')
-    # b = ['Population ages 60-64, female (% of female population)_x','Age population, age 24, male, interpolated','GDP per capita (current US$)_x']
-    # data = df[b].values
-
-    #filename = 'inner_joind_dropped'
-    #filename = 'full_imputation'
     filename = 'normed_inner_restack'
+
     #loading data, data frame of indexes and name of value cols
     data, df_multi_ind = load_data(filename, 0)
+
+
     #dist = dist_edpf(data,data)
     #np.save(filename+'_dist', dist)
-    #dist=np.load(filename+'_dist.npy')
+    dist=np.load(filename+'_dist.npy')
 
-    #show_countries_in_clusters(data,12,df_multi_ind)
+    #show_countries_in_clusters(data,25,df_multi_ind)
 
-    df = write_multi_index_clusters(data, 25, df_multi_ind)
-
+    #df = write_multi_index_clusters(data, 25, df_multi_ind)
     #pretty_out_put(df)
 
-    #elbow_plot(data, 'elbow_plot1.png')
+    #elbow_plot(data, 'elbow_plot1.png', 50)
 
-    # print('k   silhouette')
-    # lst=[]
-    # for k in range(2, 50):
-    #     score1 = silhouette(data, k, dist)
-    #     score2 = silhouette(data, k, dist)
-    #     score3 = silhouette(data, k, dist)
-    #     score4 = silhouette(data, k, dist)
-    #     ave = (score1+score2+score3+score4)/4
-    #     print(k,' ',ave)
-    #     lst.append([k,ave,score1,score2,score3,score4])
-    # pd.DataFrame(lst, columns=['k','ave','score1',"score2","score3","score4"]).to_csv('silhouette_scores.csv',index=False)
+    build_silhouette_csv(data,n,dist)

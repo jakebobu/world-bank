@@ -1,19 +1,48 @@
-from sklearn.datasets import load_digits
 import pylab as pl
-from sklearn.preprocessing import StandardScaler
 import numpy as np
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import pandas as pd
-from statsmodels.regression.linear_model import OLS
-import statsmodels.api as sm
 from impute_validation import simple_final_df
-from sklearn.cluster import DBSCAN,KMeans,Birch,AgglomerativeClustering,FeatureAgglomeration
+from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics import fowlkes_mallows_score, normalized_mutual_info_score,adjusted_mutual_info_score
-import pdb
+
+
+def find_i_eigenvectors(pca, percent):
+    '''
+    makes a scree_plot from the pca, and determines how many eigenvectors are
+    needed to get to 90 percent of explained Variance
+
+    Parameters
+    ----------
+    pca : model, already trained pca
+
+    title : string, optional title for plot
+
+    Returns
+    -------
+    i : int, number of eigenvectors needed to get 90 percent variance explained
+    '''
+    vals = pca.explained_variance_ratio_
+    num = 0
+    for i,p in enumerate(vals):
+        num +=p
+        if num>percent:
+            return i+1
+    return None
+
 
 def scree_plot(pca, title=None):
+    '''
+    makes a scree_plot from the pca
+
+    Parameters
+    ----------
+    pca : model, already trained pca
+
+    title : string, optional title for plot
+    '''
     num_components = pca.n_components_
     ind = np.arange(num_components)
     vals = pca.explained_variance_ratio_
@@ -47,146 +76,69 @@ def scree_plot(pca, title=None):
 
     if title is not None:
         plt.title(title, fontsize=16)
-    print (vals)
-    num = 0
-    for i,p in enumerate(vals):
-        num +=p
-        if num>0.9:
-            print('############ scree 1 ',i)
-            return i+1
-    print('############ scree 2 ',i)
-    return None
 
-def plot_embedding(X, y, title=None):
-    '''
-    INPUT:
-    X - decomposed feature matrix
-    y - target labels (digits)
-
-    Creates a pyplot object showing digits projected onto 2-dimensional
-    feature space. PCA should be performed on the feature matrix before
-    passing it to plot_embedding.
-
-    '''
-    x_min, x_max = np.min(X, 0), np.max(X, 0)
-    X = (X - x_min) / (x_max - x_min)
-
-    plt.figure(figsize=(10, 6), dpi=250)
-    ax = plt.subplot(111)
-    ax.axis('off')
-    ax.patch.set_visible(False)
-    for i in range(X.shape[0]):
-        plt.text(X[i, 0], X[i, 1], str(y[i][0]),
-                 color=plt.cm.Set1(y[i][1] / 10.),
-                 fontdict={'weight': 'bold', 'size': 12})
-
-    plt.xticks([]), plt.yticks([])
-    plt.ylim([-0.1,1.1])
-    plt.xlim([-0.1,1.1])
-
-    if title is not None:
-        plt.title(title, fontsize=16)
-
-def show_digits(n_class, n_images):
-    digits=load_digits(n_class=n_class)
-    plt.gray()
-    for i in range(n_images):
-        plt.matshow(digits.images[i])
     plt.show()
 
-def make_pca(data,n_components):
-    pca = PCA(n_components=n_components)
+
+def make_pca(data, percent):
+    '''
+    makes a n_component pca from the data
+
+    Parameters
+    ----------
+    data : numpy array, info being decomposed
+
+    percent : float, decimal of fraction of varaince expected to be explained
+
+    Returns
+    -------
+    pca : model, already trained pca
+    '''
+    n = len(data[0])-2
+    pca = PCA(n_components=n)
+    pca.fit(data)
+    i = find_i_eigenvectors(pca, percent)
+    print('############### using {} pca components ###############'.format(i))
+    pca = PCA(n_components=i)
     pca.fit(data)
     return pca
 
-def make_plot_embedding(data,y,scree=False):
-    data = np.array(data)
-    pca = make_pca(data,57)
+def save_pca_dist(recon):
+    '''
+    builds and saves a distance matrix for recon
 
-    if scree:
-        i=scree_plot(pca, title=None)
-        print('############ make plot ',i)
-    else:
-        i = None
-
-    X=data.dot(pca.components_.T)
-    plot_embedding(X, y, title=None)
-    return i
+    Parameters
+    ----------
+    recon : numpy array, incoming
+    '''
+    dist_X = euclidean_distances(recon, recon)
+    np.save('pca_dist_vec', dist_X)
 
 
 if __name__ == '__main__':
-    #df = pd.read_csv('inner_joind_dropped.csv').drop(['Unnamed: 0.1','Unnamed: 0'], axis=1)
-    #df = pd.read_csv('full_imputation.csv')
+
     df = pd.read_csv('imputed.csv')
-    #df = pd.read_csv('subset_small.csv').drop(['Unnamed: 0'], axis=1)
-    #filename = 'subset_imputed'
-    #df = simple_final_df(df, filename)
 
-    df.drop('Unnamed: 0', axis=1,inplace=True)
     data =df.drop(['Country Name','level_1'], axis=1).values
-    target = df[['Country Name','GDP per capita (current US$)']].values
-    #target = df[['Unnamed: 0','Unnamed: 1']].values
 
-    i = make_plot_embedding(data,target,scree=True)
-    #i=17
-    # Y=target
-    # for i in range(1,len(data[0])+1):
-    #     pca = make_pca(data,i)
-    #     X=data.dot(pca.components_.T)
-    #     X=sm.add_constant(X)
-    #     model = sm.OLS(Y,X).fit()
-    #     print('\n for {} eigenbasis the OLS has'.format(i))
-    #     print('r2 : ',model.rsquared)
-    #     print('r2 adj : ',model.rsquared_adj)
-    #     print('var explained', pca.explained_variance_ratio_)
-
-    #plt.show()
-
-    print('############### using {} pca components ###############'.format(i))
-
-    #dist=np.load('full_imputation_dist.npy')
-
-    pca = make_pca(data,i)
+    pca = make_pca(data,0.9)
     X=data.dot(pca.components_.T)
 
-    #dist_X = euclidean_distances(X, X)
-    #dist_X=np.load('pca_17_vec_dist.npy')
-
-    #filename = 'pca_{}_vec'.format(i)
-    #np.save(filename+'_dist', dist_X)
+    #save_pca_dist(X)
 
     n_clusters = 25
 
     km_data = KMeans(n_jobs = -2, n_clusters=n_clusters).fit(data)
-    #db_dist = DBSCAN(eps = 0.0264175, metric='precomputed', n_jobs = -1,min_samples=2).fit(dist)
-    #db_pca = DBSCAN(eps=0.0059625, metric='precomputed',n_jobs = -1,min_samples=2).fit(dist_X)
     km_pca = KMeans(n_jobs = -2, n_clusters=n_clusters).fit(X)
-    #birch_data = Birch(n_clusters=n_clusters).fit(data)
-    #agglom_data = AgglomerativeClustering(n_clusters=n_clusters).fit(data)
-    #birch_pca = Birch(n_clusters=n_clusters).fit(X)
-    #agglom_pca = AgglomerativeClustering(n_clusters=n_clusters).fit(X)
 
     filename = '{}_labels.csv'.format(n_clusters)
 
     df = pd.read_csv(filename)
 
-    #df['db_dist']=db_dist.labels_
-    #df['db_pca']=db_pca.labels_
     df['km_pca']=km_pca.labels_
-    #df['birch_data']=birch_data.labels_
-    #df['agglom_data']=agglom_data.labels_
-    #df['birch_pca']=birch_pca.labels_
-    #df['agglom_pca']=agglom_pca.labels_
     df['km_data'] = km_data.labels_
 
     df.to_csv(filename, index = False)
-
-    # for col1 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label','km_data']:
-    #     for col2 in ['db_dist','db_pca','km_pca','birch_data','agglom_data','birch_pca','agglom_pca','label','km_data']:
-    #         print('fowlkes mallows score {} vs {} '.format(col1,col2), fowlkes_mallows_score(df[col1].values, df[col2].values))
-    #         print('normed mutal info score {} vs {} '.format(col1,col2), normalized_mutual_info_score(df[col1].values, df[col2].values))
-    #         print('adjusted mutal info score {} vs {} '.format(col1,col2), adjusted_mutual_info_score(df[col1].values, df[col2].values))
-    #         print('\n')
 
     for col1 in ['km_pca','label','km_data']:
         for col2 in ['km_pca','label','km_data']:

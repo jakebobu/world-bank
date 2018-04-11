@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Wicked World Means Null</title>
+  <link rel="stylesheet" type="text/css" href="../static/templatemo_style.css" />
+</head>
+
+<body>
+    <div>
+        <h2> </h2>
+    </div>
+
+
+    <div>
+        <h2>Wicked World Means Null</h2>
+    </div>
+
+    
+        <form action="/dashboard/">
+                <div class="select-wrapper" style="width:70%;">
+                  <select name="country_select">
+                  	{% for country in list_country %}
+                  		<option value="{{ country }}">{{ country }}</option>
+                  	{% endfor %}
+                  </select>
+                </div>
+                <br>
+                <input type="submit" class="button" value="View Country"/>
+       </form>
+
+
+
+</body>
+</html>

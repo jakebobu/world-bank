@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title> Wicked World Means Null </title>
+  <link rel="stylesheet" type="text/css" href="../../static/templatemo_style.css" />
+</head>
+
+<body>
+ 
+
+    <table>
+        <h2>{{name}} in {{year}}</h2>
+        <h1> In {{year}} {{name}} had simmilar aggregate conditions to these countries:</h1>
+            {{data | safe}}
+ <h1> A country does not always stay in the same grouping from the first year it is in a group till the last year, but it usually does. </h1>
+    </table>
+
+    <div>
+        <h1>By my distance meteric with out filling any of the empty values the least similar is {{least_name}} in {{least_year}}.</h1>
+    </div>
+    
+    <form action="/" >
+        <input type="submit" value = "go back to the welcome page"/>
+    </form>
+
+</body>
+</html>
+

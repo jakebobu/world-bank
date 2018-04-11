@@ -3,9 +3,19 @@ import numpy as np
 
 def select_restack(name, save=False):
     '''
-    This functon retrieves the data sheets,
-    then it reorients them such that the features are the columns and the data
-    frame is doube indexed by country_name and year ('level_1')
+    This functon retrieves the data sheets, then it reorients them such that the
+    features are the columns and the data frame is doube indexed by country_name
+    and year ('level_1')
+
+    Parameters
+    ----------
+    name: string, name of csv in data_sheets to go find
+
+    save : bool, TRUE saves the intermediare step to disk
+
+    Returns
+    -------
+    df_reind : pandas dataframe, this is df after psudopivot
     '''
 
     path = '/home/jake/world-bank/data_sheets/{}.csv'.format(name)
@@ -40,6 +50,18 @@ def select_restack(name, save=False):
     return df_reind
 
 def joining(lst):
+    '''
+    calls previous function to create DataFrames for each name in the lst and
+    joins them on the year country name psudoindex and writes this to disk
+
+    Parameters
+    ----------
+    lst: list of strings, names of csv in data_sheets to go find
+
+    Returns
+    -------
+    df : pandas dataframe, this is full joined DataFrame
+    '''
     for i, name in enumerate(lst):
         if i == 0:
             df = select_restack(name)

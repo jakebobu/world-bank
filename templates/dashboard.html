@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title> Wicked World Means Null </title>
+  <link rel="stylesheet" type="text/css" href="../static/templatemo_style.css" />
+</head>
+
+<body>
+    <IMG SRC="{{ url_for('fig', country = country) }}" ALT="graph" WIDTH=1300 HEIGHT=650>
+
+    <div>
+        <h1>Any thing to the right of the blue bar is a prediction based on a collection of random forest regressions</h1>
+    </div>
+
+
+        <form action="/group/{{ country }}/">
+                <div class="select-wrapper" style="width:70%;">
+                  <select name="year_select">
+                  	{% for year in list_year %}
+                  		<option value="{{ year }}">{{ year }}</option>
+                  	{% endfor %}
+                  </select>
+                </div>
+                <br>
+                <input type="submit" class="button" value="View Year"/>
+       </form>
+
+
+    
+    <form action="/" >
+        <input type="submit" value = "go back to the welcome page"/>
+    </form>
+
+</body>
+</html>
