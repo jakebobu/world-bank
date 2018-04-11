@@ -26,6 +26,8 @@
 <!---
 Ghost in the Data
 -->
+The important step in this project was understanding and dealing with the null values about 22% of the values were null and make an understanding of the data I want to intelligently manage these null values.  Dropping all the columns that had null values would have left me without much to work with xx% of columns.  The threshhold I decided on to keep a column was 60% non null values.  This was relatively arbitrary and could be adjusted for different results.  A lot of the original data is population statistics.  While important I wanted to reduce the colinearity in my data set so I dropped most of the purely population counting stats and kept a few counting stats and all the relative population statistics.
+
 ## Project
 The goal of this project is to use World Bank data to inform our understanding of the world.  I am building a model to provide some amount of context to understanding countries by showing countries from recent years that are similar.  This project is a missing value project; there are many fantastic clustering algorithms that do wonderful things... so long as they are provided good pretty data.  The World Bank data set provided me with the opportunity to build an algorithm that can on its own handle missing values and optimize a combination of imputation methods to best approximate the missing values.
 
@@ -38,26 +40,27 @@ Three Types of Model Constructed:
 <!---
 Trust the Process
 -->
-The data consists of 10293 rows and 409 columns after the first round of culling and reorientation. There are 219 countries, each having 47 associated years.  
+The data consists of XX rows and XX columns after the first round of culling and reorientation. There are XX countries, each having 46 associated years.  
 
 Data preprocessing was a significant undertaking utilizing pandas, and was carried out in stages.  
-* First each of the three data sets was cut down to years of interest 1970 to 2016, then reoriented [(src/reiorient.py)](https://github.com/jakebobu/world-bank/blob/master/src/reorient.py) and combined to create a single table the table of country year multi indexes all of its corresponding features [(src/joining.py)](https://github.com/jakebobu/world-bank/blob/master/src/joining.py).  
+* First each of the three data sets was cut down to years of interest 1970 to 2016, then reoriented  and combined to create a single table the table of country year multi indexes all of its corresponding features [(src/build_csv.py)](https://github.com/jakebobu/world-bank/blob/master/src/build_csv.py).  
 * The resulting data set is scaled so that any feature with a five order of magnitude difference between the 90th percentile and 10th percentile is on the log scale, then all the features are normalized [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).  
 * This data set with about 7% missing values is the data set that model type one is built for.  
 * Then a linear combination of k nearest neighbors imputation and bi-directional exponentially weighted moving average imputation is used to fill the missing values [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py), this data set is what model type 2 is built on.
 * Then a principal component analysis reconstruction of the data set with 17 eigenvectors produces the data set that model type 3 is built on [(src/make_pca.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).
+* To test the idea that aggregate conditions are predictive of future Xgrowth/developmentX I built a couple regression models to predict future gdp per capita from a single country year vector [src/random_forests.pu](https://github.com/jakebobu/world-bank/blob/master/src/random_forests.py)
 
 ## Preliminary Results
 
-![Elbow Plot](https://github.com/jakebobu/world-bank/blob/master/elbow_plot_25_clusters.png)
+![Elbow Plot](https://github.com/jakebobu/world-bank/blob/master/outputs/final_elbow_plot.png)
 
-As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [silhouette_scores_by_number_of_clusers](https://github.com/jakebobu/world-bank/blob/master/silhouette_scores_by_number_of_clusers) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 19 as it had enough clusters to provide context for its members while being small enough to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent)
+As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [silhouette_scores_by_number_of_clusers](https://github.com/jakebobu/world-bank/blob/master/outputs/silhouette_scores.csv) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 19 as it had enough clusters to provide context for its members while being small enough to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent)
 
 |Models Compared|Fowlkes Mallows|Normed Mutual l Info|
 | ------------- |:-------------:| ---------------:|
-| M1 vs M2      |0.792          |0.859            |
-| M2 vs M3      |0.926          |0.944            |
-| M1 vs M3      |0.756          |0.843            |
+| M1 vs M2      |0.574          |0.739            |
+| M2 vs M3      |0.715          |0.813            |
+| M1 vs M3      |0.637          |0.761            |
 
 Fowlkes Mallow is the geometric mean of precision and recall.
 Normed Mutual Info is the set based metric: 
