@@ -1,3 +1,0 @@
-for 4: 
-{'criterion': 'mse', 'max_depth': 20, 'max_features': 200, 'min_samples_split': 4, 'n_estimators': 300}
-for 4 mse is 0.018351683561194387 and r2 is 0.9807800515281856
