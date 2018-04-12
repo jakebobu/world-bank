@@ -1,6 +1,7 @@
 # A future informed by our past: tackling a wicked problem[<sup>1</sup>](#references) with historical data
 ![World Bank](http://www.worldbank.org/content/dam/wbr/logo/logo-wb-header-en.svg)
-http://ec2-52-23-205-66.compute-1.amazonaws.com:8080/
+
+# [Web App of Results](http://ec2-52-23-205-66.compute-1.amazonaws.com:8080/)
 
 ### Contents
 0. [Contents](#contents)
@@ -17,7 +18,7 @@ http://ec2-52-23-205-66.compute-1.amazonaws.com:8080/
 <!---
 * As seen in _ the previous assumption of linear development, maybe being replaced with the need to understand aggregate conditions for development
 -->
-* Some companies are diversifying there portfolios into developing markets, let’s find the right ones, possibly countries similar to countries where said company has had success or countries that have the right conditions for growth.[<sup>3</sup>](#references)
+* Some companies are diversifying their portfolios into developing markets, let’s find the right ones, possibly countries similar to countries where said company has had success or countries that have the right conditions for growth.[<sup>3</sup>](#references)
 * Strategic development, investment in countries that are at a tipping point to prompt desired growth.[<sup>4</sup>](#references)
 * The history of states and nations has provided some income for historiographers and book dealers, but I know no other purpose it may have served. - Borne (probably Ludwig Börne) [<sup>5</sup>](#references)
 
@@ -27,47 +28,51 @@ http://ec2-52-23-205-66.compute-1.amazonaws.com:8080/
 <!---
 Ghost in the Data
 -->
-The important step in this project was understanding and dealing with the null values about 22% of the values were null and make an understanding of the data I want to intelligently manage these null values.  Dropping all the columns that had null values would have left me without much to work with xx% of columns.  The threshhold I decided on to keep a column was 60% non null values.  This was relatively arbitrary and could be adjusted for different results.  A lot of the original data is population statistics.  While important I wanted to reduce the colinearity in my data set so I dropped most of the purely population counting stats and kept a few counting stats and all the relative population statistics.
+The important step in this project was understanding and dealing with the null values.  Aabout 22% of the values were null and make an understanding of the data I want to intelligently manage these null values.  Dropping all the columns that had null values would have left me without much to work with xx% of columns.  The threshhold I decided on to keep a column was 60% non null values.  This was relatively arbitrary and could be adjusted for different results.  A lot of the original data is population statistics.  While important I wanted to reduce the colinearity in my data set so I dropped most of the purely population counting stats and kept a few counting stats and all the relative population statistics.
+
+This data set after scaling and normalizing was used to build the Null Kmeans model.  For the next two models imputation for the emptly cells was necessary.  I looked at different methods and decided on a combination of K nearest neigbors (knn) and exponentially weighted moving average (ewma) imputations.  I modified the ewma so that it looks forward and backwards in the sequence instead of just one direction.  This combination resulted in XX reduction in errors over either method alone.
 
 ## Project
 The goal of this project is to use World Bank data to inform our understanding of the world.  I am building a model to provide some amount of context to understanding countries by showing countries from recent years that are similar.  This project is a missing value project; there are many fantastic clustering algorithms that do wonderful things... so long as they are provided good pretty data.  The World Bank data set provided me with the opportunity to build an algorithm that can on its own handle missing values and optimize a combination of imputation methods to best approximate the missing values.
 
 Three Types of Model Constructed:
-* M1 Build a model that will group country year multi-indexes without having to impute values to fill nulls in the World Bank data set.
-* M2 Building an imputation method to fill the nulls in the data set in the best way possible. Build models to work on this filled data set.
-* M3 Using this filled dataset run it through principal component analysis reduces the collinearities in the data set.  And build a model to work on this transformed data set.
+* Null Kmeans: a model that will group country year multi-indexes without having to impute values to fill nulls in the World Bank data set.
+* Imputed Kmeans: building an imputation method to fill the nulls in the data set in the best way possible. Build models to work on this filled data set.
+* PCA Kmeans: using this filled dataset run it through principal component analysis reduces the collinearities in the data set.  And build a model to work on this transformed data set.
 
 ## The Process
 <!---
 Trust the Process
 -->
-The data consists of XX rows and XX columns after the first round of culling and reorientation. There are XX countries, each having 46 associated years.  
+The data consists of XX rows and XX columns after the first round of culling and reorientation. There are XX countries or agregation of countrys, each having 46 associated years from 1970 to 2016.  
 
 Data preprocessing was a significant undertaking utilizing pandas, and was carried out in stages.  
 * First each of the three data sets was cut down to years of interest 1970 to 2016, then reoriented  and combined to create a single table the table of country year multi indexes all of its corresponding features [(src/build_csv.py)](https://github.com/jakebobu/world-bank/blob/master/src/build_csv.py).  
 * The resulting data set is scaled so that any feature with a five order of magnitude difference between the 90th percentile and 10th percentile is on the log scale, then all the features are normalized [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).  
-* This data set with about 22% missing values is the data set that model type one (M1) is built for.  
-* Then k nearest neighbors imputation and bi-directional exponentially weighted moving average imputation are averaged to fill the missing values [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py), this data set is what model type 2 is built on.
-* Then a principal component analysis reconstruction of the data set with 17 eigenvectors produces the data set that model type 3 is built on [(src/make_pca.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).
-* To test the idea that aggregate conditions are predictive of future Xgrowth/developmentX I built a couple regression models to predict future gdp per capita from a single country year vector [src/random_forests.pu](https://github.com/jakebobu/world-bank/blob/master/src/random_forests.py)
-* To display the gdp per capita graphs in the web application [src/make_gdp_csv.py](https://github.com/jakebobu/world-bank/blob/master/src/make_gdp_csv.py) creates a csv of the gdp per capita and predictions for the next five years.
+* This data set with about 22% missing values is the data set that Null Kmeans is built for.  
+* Then k nearest neighbors imputation and bi-directional exponentially weighted moving average imputation are averaged to fill the missing values [(src/impute_validation.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py), this data set is what Impute Kmeans is built on.
+* Then a principal component analysis reconstruction of the data set with 57 eigenvectors produces the data set that PCA Kmeans is built on [(src/make_pca.py)](https://github.com/jakebobu/world-bank/blob/master/src/impute_validation.py).
+* To test the idea that aggregate conditions are predictive of future growth I built a couple regression models to predict future gdp per capita from a single country year vector [(src/random_forests.py)](https://github.com/jakebobu/world-bank/blob/master/src/random_forests.py)
+* To display the gdp per capita graphs in the web application [(src/make_gdp_csv.py)](https://github.com/jakebobu/world-bank/blob/master/src/make_gdp_csv.py) creates a csv of the gdp per capita and predictions for the next five years.
 
-## Preliminary Results
-
+## Null Kmeans: Model Building
 ![Elbow Plot](https://github.com/jakebobu/world-bank/blob/master/outputs/final_elbow_plot.png)
 
-As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [silhouette_scores_by_number_of_clusers](https://github.com/jakebobu/world-bank/blob/master/outputs/silhouette_scores.csv) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 25 as it had enough clusters to provide context for its members while being small enough to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent)
+As can be seen in the above plot there is not a distinct elbow and the silhouette scores in [(silhouette_scores_by_number_of_clusers)](https://github.com/jakebobu/world-bank/blob/master/outputs/silhouette_scores.csv) there is not a distinct place that the clustering of M1 is calling out as a 'correct' number of clusters.  I chose 25 as it had enough clusters to provide context for its members while keepng the clusters small enough to not just be the break down we see represented on a regular basis (four clusters, the peak of the silhouette scores is mostly just divisions of wealth and size that are already pretty apparent)
 
-|Models Compared|Fowlkes Mallows|Normed Mutual l Info|
-| ------------- |:-------------:| ---------------:|
-| M1 vs M2      |0.627          |0.760            |
-| M2 vs M3      |0.784          |0.860            |
-| M1 vs M3      |0.618          |0.749            |
+## Results
 
-Fowlkes Mallow is the geometric mean of precision and recall.
-Normed Mutual Info is the set based metric: 
-![NMI](http://scikit-learn.org/stable/_images/math/bec21a153660524d4479a87aaef3b1f00bcd1dbb.png)
-My interpretation of these results that in the broadest strokes, model 1 has less in common with each of the other models than they do with each other, but not by a huge amount.  This is to say it is probably not commpletely useless and it feels like an advantage to say it isn't makeing any imputation assumptions.
+|Models Compared|Fowlkes Mallows|Normed Mutual Info|
+| ------------- |:-------------:| ----------------:|
+|Null vs Impute |0.627          |0.760             |
+| Impute vs PCA |0.784          |0.860             |
+|  Null vs PCA  |0.618          |0.749             |
+
+[Fowlkes Mallow](http://wildfire.stat.ucla.edu/pdflibrary/fowlkes.pdf) is the geometric mean of precision and recall.
+[Normed Mutual Info](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.mutual_info_score.html) is a set based metric:
+![NMI](http://www.sciweavers.org/download/Tex2Img_1523556225.png)
+
+My interpretation of these results in the broadest strokes, is that the three models have a lot in common amoungst there clustering.  Null Kmeans has less in common with each of the other models than they do with each other, but not by a huge amount average percent change of those metrics of 16%.  This is to say it is probably not commpletely useless and it feels nice to say it isn't makeing any imputation assumptions.
 
 I have built a web app to allow for some interaction with the results: http://ec2-52-23-205-66.compute-1.amazonaws.com:8080/
 
