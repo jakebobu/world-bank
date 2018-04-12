@@ -57,7 +57,7 @@ Data preprocessing was a significant undertaking utilizing pandas, and was carri
 * To display the gdp per capita graphs in the web application [(src/make_gdp_csv.py)](https://github.com/jakebobu/world-bank/blob/master/src/make_gdp_csv.py) creates a csv of the gdp per capita and predictions for the next five years.
 
 ## Null Kmeans: Model Building
-<img src="https://github.com/jakebobu/world-bank/blob/master/outputs/final_elbow_plot.png" alt="Elbow Plot" width="370"> <img src="https://github.com/jakebobu/world-bank/blob/master/outputs/SilhouetteGraph.png" alt="Silhouette" width="370">
+<img src="https://github.com/jakebobu/world-bank/blob/master/outputs/final_elbow_plot.png" alt="Elbow Plot" width="400" height="400"> <img src="https://github.com/jakebobu/world-bank/blob/master/outputs/SilhouetteGraph.png" alt="Silhouette" width="400" height="400">
 
 As can be seen in the above plot there is not a distinct elbow and in the silhouette scores there is not a distinct place that the clustering of Null Kmeans is calling out as a 'correct' number of clusters.  I chose 25 as it had enough clusters to provide context for its members while keepng the clusters small enough in members to not just be the break down we see represented on a regular basis, big vs small and rich vs poor.
 
