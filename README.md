@@ -69,7 +69,7 @@ As can be seen in the above plot there is not a distinct elbow and the silhouett
 |  Null vs PCA  |0.618          |0.749             |
 
 [Fowlkes Mallow](http://wildfire.stat.ucla.edu/pdflibrary/fowlkes.pdf) is the geometric mean of precision and recall.
-[Normed Mutual Info](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.mutual_info_score.html) is a set based metric:
+[Normed Mutual Info](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.mutual_info_score.html) is a normalization of a set based metric Mutual Information:
 ![NMI](http://www.sciweavers.org/download/Tex2Img_1523556225.png)
 
 My interpretation of these results in the broadest strokes, is that the three models have a lot in common amoungst there clustering.  Null Kmeans has less in common with each of the other models than they do with each other, but not by a huge amount average percent change of those metrics of 16%.  This is to say it is probably not commpletely useless and it feels nice to say it isn't makeing any imputation assumptions.
