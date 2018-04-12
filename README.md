@@ -9,7 +9,8 @@
 2. [Nulls in Data](#nulls-in-data)
 3. [Project](#project)
 4. [The Process](#the-process)
-5. [Preliminary Results](#preliminary-results)
+5. [Null Kmeans: Model Building](#null-kmeans-model-building)
+5. [Results](#results)
 6. [References](#references)
  
 ## Motivation
