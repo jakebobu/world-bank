@@ -57,8 +57,8 @@ Data preprocessing was a significant undertaking utilizing pandas, and was carri
 * To display the gdp per capita graphs in the web application [(src/make_gdp_csv.py)](https://github.com/jakebobu/world-bank/blob/master/src/make_gdp_csv.py) creates a csv of the gdp per capita and predictions for the next five years.
 
 ## Null Kmeans: Model Building
-![Elbow Plot](https://github.com/jakebobu/world-bank/blob/master/outputs/final_elbow_plot.png)
-![Silhouette](https://github.com/jakebobu/world-bank/blob/master/outputs/SilhouetteGraph.png)
+<img src="https://github.com/jakebobu/world-bank/blob/master/outputs/final_elbow_plot.png" alt="Elbow Plot" width="400">
+<img src="https://github.com/jakebobu/world-bank/blob/master/outputs/SilhouetteGraph.png" alt="Silhouette" width="400">
 
 As can be seen in the above plot there is not a distinct elbow and in the silhouette scores there is not a distinct place that the clustering of Null Kmeans is calling out as a 'correct' number of clusters.  I chose 25 as it had enough clusters to provide context for its members while keepng the clusters small enough in members to not just be the break down we see represented on a regular basis, big vs small and rich vs poor.
 
@@ -70,9 +70,10 @@ As can be seen in the above plot there is not a distinct elbow and in the silhou
 | Impute vs PCA |0.784          |0.860             |
 |  Null vs PCA  |0.618          |0.749             |
 
-[Fowlkes Mallow](http://wildfire.stat.ucla.edu/pdflibrary/fowlkes.pdf) is the geometric mean of precision and recall.
-[Normed Mutual Info](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.mutual_info_score.html) is a normalization of a set based metric Mutual Information:
-![NMI](http://www.sciweavers.org/download/Tex2Img_1523556225.png)
+Fowlkes Mallow[<sup>6</sup>](#references) is the geometric mean of precision and recall.
+Normed Mutual Info[<sup>7</sup>](#references) is a normalization of a set based metric Mutual Information: 
+
+<img src="http://www.sciweavers.org/download/Tex2Img_1523556225.png" alt="mutual information" width="250">
 
 My interpretation of these results in the broadest strokes, is that the three models have a lot in common amoungst there clustering.  Null Kmeans has less in common with each of the other models than they do with each other, but not by a huge amount average percent change against those metrics is 16%.  This is to say it is probably not commpletely useless and it feels nice to say it isn't makeing any imputation assumptions.
 
@@ -84,4 +85,5 @@ I have built a web app to allow for some interaction with the results: http://ec
 3. https://us.axa.com/axa-products/investment-strategies/articles/emerging-market-investments.html
 4. https://www.gatesfoundation.org/Where-We-Work/Africa-Office/Focus-Countries
 5. https://www.sheclick.com/quotes/history-is-the-best-predictor-of-the-future-best-quotes/
-
+6. http://wildfire.stat.ucla.edu/pdflibrary/fowlkes.pdf
+7. http://scikit-learn.org/stable/modules/generated/sklearn.metrics.mutual_info_score.html
