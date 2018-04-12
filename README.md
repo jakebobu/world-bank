@@ -57,7 +57,7 @@ Data preprocessing was a significant undertaking utilizing pandas, and was carri
 
 ## Null Kmeans: Model Building
 ![Elbow Plot](https://github.com/jakebobu/world-bank/blob/master/outputs/final_elbow_plot.png)
-![Silhouette](file:///home/jake/world-bank/SilhouetteGraph.png)
+![Silhouette](https://github.com/jakebobu/world-bank/blob/master/outputs/SilhouetteGraph.png)
 
 As can be seen in the above plot there is not a distinct elbow and in the silhouette scores there is not a distinct place that the clustering of Null Kmeans is calling out as a 'correct' number of clusters.  I chose 25 as it had enough clusters to provide context for its members while keepng the clusters small enough in members to not just be the break down we see represented on a regular basis, big vs small and rich vs poor.
 
