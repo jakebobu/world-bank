@@ -1,7 +1,7 @@
 # A future informed by our past: tackling a wicked problem[<sup>1</sup>](#references) with historical data
 ![World Bank](http://www.worldbank.org/content/dam/wbr/logo/logo-wb-header-en.svg)
 
-# [Web App of Results](http://ec2-52-23-205-66.compute-1.amazonaws.com:8080/)
+# [Web App of Results](http://ec2-35-174-106-106.compute-1.amazonaws.com:8080/)
 
 ### Contents
 0. [Contents](#contents)
@@ -76,7 +76,7 @@ Normed Mutual Info[<sup>7</sup>](#references) is a normalization of a set based 
 
 My interpretation of these results in the broadest strokes, is that the three models have a lot in common amoungst there clustering.  Null Kmeans has less in common with each of the other models than they do with each other, but not by a huge amount average percent change against those metrics is 16%.  This is to say it is probably not commpletely useless and it feels nice to say it isn't makeing any imputation assumptions.
 
-I have built a web app to allow for some interaction with the results: http://ec2-52-23-205-66.compute-1.amazonaws.com:8080/
+I have built a web app to allow for some interaction with the results: http://ec2-35-174-106-106.compute-1.amazonaws.com:8080/
 
 ## References
 1. https://en.wikipedia.org/wiki/Wicked_problem
