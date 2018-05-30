@@ -31,7 +31,7 @@ Ghost in the Data
 -->
 The important step in this project was understanding and dealing with the null values.  Aabout 22% of the values were null and make an understanding of the data I want to intelligently manage these null values.  Dropping all the columns that had null values would have left me without much to work with xx% of columns.  The threshhold I decided on to keep a column was 60% non null values.  This was relatively arbitrary and could be adjusted for different results.  A lot of the original data is population statistics.  While important I wanted to reduce the colinearity in my data set so I dropped most of the purely population counting stats and kept a few counting stats and all the relative population statistics.
 
-This data set after scaling and normalizing was used to build the Null Kmeans model.  For the next two models imputation for the emptly cells was necessary.  I looked at different methods and decided on a combination of K nearest neigbors (knn) and exponentially weighted moving average (ewma) imputations.  I modified the ewma so that it looks forward and backwards in the sequence instead of just one direction.  This combination resulted in XX reduction in errors over either method alone.
+This data set after scaling and normalizing was used to build the Null Kmeans model.  For the next two models imputation for the emptly cells was necessary.  I looked at different methods and decided on a combination of K nearest neigbors (knn) and exponentially weighted moving average (ewma) imputations.  I modified the ewma so that it looks forward and backwards in the sequence instead of just one direction.  This combination resulted in 2% reduction in errors over either method alone.
 
 ## Project
 The goal of this project is to use World Bank data to inform our understanding of the world.  I am building a model to provide some amount of context to understanding countries by showing countries from recent years that are similar.  This project is a missing value project; there are many fantastic clustering algorithms that do wonderful things... so long as they are provided good pretty data.  The World Bank data set provided me with the opportunity to build an algorithm that can on its own handle missing values and optimize a combination of imputation methods to best approximate the missing values.
@@ -45,7 +45,7 @@ Three Types of Model Constructed:
 <!---
 Trust the Process
 -->
-The data consists of XX rows and XX columns after the first round of culling and reorientation. There are XX countries or agregation of countrys, each having 46 associated years from 1970 to 2016.  
+The data consists of 9776 rows and 399 columns after the first round of culling and reorientation. There are 208 countries or aggregations of countries, each having 47 associated years from 1970 to 2016.  
 
 Data preprocessing was a significant undertaking utilizing pandas, and was carried out in stages.  
 * First each of the three data sets was cut down to years of interest 1970 to 2016, then reoriented  and combined to create a single table the table of country year multi indexes all of its corresponding features [(src/build_csv.py)](https://github.com/jakebobu/world-bank/blob/master/src/build_csv.py).  
