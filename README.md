@@ -72,7 +72,7 @@ As can be seen in the above plot, there is not a distinct elbow and in the silho
 Fowlkes Mallow[<sup>6</sup>](#references) is the geometric mean of precision and recall.
 Normed Mutual Info[<sup>7</sup>](#references) is a normalization of a set based metric Mutual Information[<sup>8</sup>](#references).
 
-My interpretation of these results in the broadest strokes, is that the three models have a lot in common amongst there clustering.  From this table of results we can see that the two models built on imputed data have more in common, but the difference between the Impute and PCA vs the Null model is small.  This shows the usefullness of this Null k-means algorithum which makes no missing value replacement assumptions.
+My interpretation of these results in the broadest strokes, the three models have a lot in common amongst there clustering.  From this table of results we can see that the two models built on imputed data have more in common, but the difference between the Impute and PCA vs the Null model is small.  This shows the usefulness of this Null k-means algorithm which makes no missing value replacement assumptions.
 
 I have built a web app to allow for some interaction with the results: http://ec2-35-174-106-106.compute-1.amazonaws.com:8080/
 
@@ -83,5 +83,5 @@ I have built a web app to allow for some interaction with the results: http://ec
 4. https://www.gatesfoundation.org/Where-We-Work/Africa-Office/Focus-Countries
 5. https://www.sheclick.com/quotes/history-is-the-best-predictor-of-the-future-best-quotes/
 6. http://wildfire.stat.ucla.edu/pdflibrary/fowlkes.pdf
-7. http://scikit-learn.org/stable/modules/generated/sklearn.metrics.normalized_mutual_info_score.html#sklearn.metrics.normalized_mutual_info_score
+7. http://scikit-learn.org/stable/modules/generated/sklearn.metrics.normalized_mutual_info_score.html
 8. https://en.wikipedia.org/wiki/Mutual_information
