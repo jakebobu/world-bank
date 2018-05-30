@@ -56,10 +56,10 @@ Data preprocessing was a significant undertaking utilizing pandas, and was carri
 * To test the idea that aggregate conditions are predictive of future growth I built a couple regression models to predict future gdp per capita from a single country year vector [(src/random_forests.py)](https://github.com/jakebobu/world-bank/blob/master/src/random_forests.py)
 * To display the gdp per capita graphs in the web application [(src/make_gdp_csv.py)](https://github.com/jakebobu/world-bank/blob/master/src/make_gdp_csv.py) creates a csv of the gdp per capita and predictions for the next five years.
 
-## Null Kmeans: Model Building
+## Null k-means: Model Building
 <img src="https://github.com/jakebobu/world-bank/blob/master/outputs/final_elbow_plot.png" alt="Elbow Plot" width="400" height="400"> <img src="https://github.com/jakebobu/world-bank/blob/master/outputs/SilhouetteGraph.png" alt="Silhouette" width="400" height="400">
 
-As can be seen in the above plot there is not a distinct elbow and in the silhouette scores there is not a distinct place that the clustering of Null Kmeans is calling out as a 'correct' number of clusters.  I chose 25 as it had enough clusters to provide context for its members while keepng the clusters small enough in members to not just be the break down we see represented on a regular basis, big vs small and rich vs poor.
+As can be seen in the above plot, there is not a distinct elbow and in the silhouette scores there is not a distinct place that the clustering of Null k-means is calling out as a 'correct' number of clusters. I chose 25 as it had enough clusters to provide context for its members while keeping the clusters small enough in members to not just be the break down we see represented on a regular basis, big vs small and rich vs poor.
 
 ## Results
 
@@ -70,11 +70,9 @@ As can be seen in the above plot there is not a distinct elbow and in the silhou
 |  Null vs PCA  |0.618          |0.749             |
 
 Fowlkes Mallow[<sup>6</sup>](#references) is the geometric mean of precision and recall.
-Normed Mutual Info[<sup>7</sup>](#references) is a normalization of a set based metric Mutual Information: 
+Normed Mutual Info[<sup>7</sup>](#references) is a normalization of a set based metric Mutual Information[<sup>8</sup>](#references).
 
-<img src="http://www.sciweavers.org/download/Tex2Img_1523556225.png" alt="mutual information" width="300">
-
-My interpretation of these results in the broadest strokes, is that the three models have a lot in common amoungst there clustering.  Null Kmeans has less in common with each of the other models than they do with each other, but not by a huge amount average percent change against those metrics is 16%.  This is to say it is probably not commpletely useless and it feels nice to say it isn't makeing any imputation assumptions.
+My interpretation of these results in the broadest strokes, is that the three models have a lot in common amongst there clustering.  From this table of results we can see that the two models built on imputed data have more in common, but the difference between the Impute and PCA vs the Null model is small.  This shows the usefullness of this Null k-means algorithum which makes no missing value replacement assumptions.
 
 I have built a web app to allow for some interaction with the results: http://ec2-35-174-106-106.compute-1.amazonaws.com:8080/
 
@@ -85,4 +83,5 @@ I have built a web app to allow for some interaction with the results: http://ec
 4. https://www.gatesfoundation.org/Where-We-Work/Africa-Office/Focus-Countries
 5. https://www.sheclick.com/quotes/history-is-the-best-predictor-of-the-future-best-quotes/
 6. http://wildfire.stat.ucla.edu/pdflibrary/fowlkes.pdf
-7. http://scikit-learn.org/stable/modules/generated/sklearn.metrics.mutual_info_score.html
+7. http://scikit-learn.org/stable/modules/generated/sklearn.metrics.normalized_mutual_info_score.html#sklearn.metrics.normalized_mutual_info_score
+8. https://en.wikipedia.org/wiki/Mutual_information
